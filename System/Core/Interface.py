@@ -30,7 +30,7 @@ class Command:
 		table.add_row(['-'*7,'-'*11])
 		for i in self.helpCommand:
 			table.add_row([bcolors.OKBLUE +  i[0] + bcolors.ENDC,i[1]])
-			
+
 		print table
 	def exit(self,args,pointer = None):
 		sys.exit(0)
@@ -47,8 +47,8 @@ class Command:
 			table.add_row(['-'*7,'-'*11])
 			for i in sorted(modules):
 				table.add_row([bcolors.OKBLUE + i + bcolors.ENDC,modules[i].info['Description']])
-				
-			print table		
+
+			print table
 		if(args[1] == 'options'):
 			if(pointer):
 				table 	 = prettytable.PrettyTable([bcolors.BOLD + 'Name' + bcolors.ENDC,bcolors.BOLD + 'Current Setting' + bcolors.ENDC,bcolors.BOLD + 'Required' + bcolors.ENDC,bcolors.BOLD + 'Description' + bcolors.ENDC])
@@ -57,8 +57,8 @@ class Command:
 				table.add_row(['-'*4,'-'*15,'-'*8,'-'*11])
 				for i in sorted(modules[pointer].options):
 					table.add_row([bcolors.OKBLUE +  i + bcolors.ENDC,modules[pointer].options[i][0],modules[pointer].options[i][1],modules[pointer].options[i][2]])
-				
-				print table			
+
+				print table
 	def use(self,args,pointer = None):
 		global POINTER
 		if(len(args) < 2):
@@ -71,13 +71,13 @@ class Command:
 		readline.set_completer(comp.complete)
 		while True:
 			input	= raw_input('SMOD ' + moduleName[0] + '(' + bcolors.OKBLUE + moduleName[-1] + bcolors.ENDC + ') >').strip().split()
-			try:			
+			try:
 				result 	= getattr(globals()['Command'](),input[0])(input,args[1])
 			except:
 				return None
 			if (POINTER == None):
 				break
-	
+
 	def set(self,args,pointer = None):
 		if(len(args) < 2):
 			return None
@@ -124,7 +124,7 @@ class Completer(object):
     	def complete_use(self, args):
         	if not args:
             		return self._complete_path(modulesPath)
-        	
+
         	result = self._complete_path(modulesPath + args[-1])
 		for i in range(len(result)):
 			result[i] = result[i].replace(modulesPath,'')
@@ -146,13 +146,13 @@ class Completer(object):
 					result.append(i)
 			return result
     	def complete(self, text, state):
-        
+
         	buffer = readline.get_line_buffer()
         	line = readline.get_line_buffer().split()
-        
+
         	if self.RE_SPACE.match(buffer):
             		line.append('')
-        
+
         	cmd = line[0].strip()
         	if cmd in Command.COMMANDS:
             		impl = getattr(self, 'complete_%s' % cmd)
@@ -178,8 +178,11 @@ def mainLoop():
 	readline.parse_and_bind("tab: complete")
 	readline.set_completer(comp.complete)
 	while True:
+            try:
 		input	= raw_input('SMOD >').strip().split()
 		if(input[0] in Command.COMMANDS):
 			result 	= getattr(globals()['Command'](),input[0])(input)
-	
-	
+	    except KeyboardInterrupt:
+                print("Bye!")
+                sys.exit(0)
+
